@@ -1,8 +1,11 @@
 # GetSimple-Lists
 
+
 This Lists plugin started as a Fork – in the GitHub sense –  of the Item Manager plugin, but – rather quickly – I've noticed that it would have been easier to start from scratch when fixing the bug that disturbed me and adding the new features I was looking for.
 
 Nonetheless, the Lists plugin has been extensively inspired by PyC's work in the Item Manager and uses Content Fields plugin which is very close to the Custom Fields one.
+
+## Features
 
 ## Adding the promotional items to the sidebar
 
@@ -19,3 +22,22 @@ You can then show them on the main page or on specific pages by:
 
 Of course, this same works for other parts of the template. But you cannot use this method to add the promoted items to the content of a specific page.
 For this to happen, you will have to edit the settings and set it as "prepend", "append" or "replace".
+
+## Resources
+
+- [Plugin Creation](http://get-simple.info/wiki/plugins:creation)
+- http://get-simple.info/wiki/plugins:tabs_menus
+- http://get-simple.info/wiki/plugins:hooks_filters
+- http://get-simple.info/extend/plugin/customfields/22/
+- http://get-simple.info/extend/plugin/i18n-custom-fields/100/
+- http://mvlcek.bplaced.net/get-simple/i18nspecialpages/
+- http://get-simple.info/extend/plugin/items-manager/301/ and https://github.com/aoloe/GetSimple-Items-Manager
+- https://github.com/aoloe/GetSimple-Lists
+
+other thinks to check
+- http://mvlcek.bplaced.net/get-simple/dynpages
+
+## TODO
+
+- next step is geting from i18n_specialpages the way it enforeces mandatory fields( maybe introduce http://parsleyjs.org/ for client side checks)
+- setup ww.getsimple.org
