@@ -30,14 +30,14 @@ register_plugin(
   'lists_admin'  //main function (administration)
 );
 
+/**
+ * Define the plugin's wide settings. You may adapt them to match your GS install.
+ */
 // debug('GSDATAOTHERPATH', GSDATAOTHERPATH);
 define('LISTSDATAPATH', GSDATAOTHERPATH.$lists_plugin_id.'/');
 define('LISTSDATACONFIGURATION', GSDATAOTHERPATH.$lists_plugin_id.'/'.'configuration.xml');
 
 // Settings (TODO: get them from a real settings file, filled through the Lists-settings)
-$lists_config = array (
-);
-
 if (!is_frontend()) {
     i18n_merge($lists_plugin_id, substr($LANG,0,2)); 
 }
@@ -45,16 +45,20 @@ if (!is_frontend()) {
 // debug('get_defined_vars', get_defined_vars());
 
 include(GSPLUGINPATH.$lists_plugin_id.'/Lists.php');
-Lists::initialize();
 Lists::set_plugin_id($lists_plugin_id);
+Lists::initialize();
 
 add_filter('content', 'Lists_show'); 
-add_action('settings-sidebar', 'createSideMenu', array($lists_plugin_id, i18n_r('Lists/SIDEBAR_LABEL_LISTS'), $lists_plugin_id.'_settings'));
+if (!is_frontend()) {
+    add_action('settings-sidebar', 'createSideMenu', array($lists_plugin_id, i18n_r('Lists/SIDEBAR_LABEL_LISTS'), $lists_plugin_id.'_settings'));
 
-// add a link in the admin tab 'theme'
-foreach (Lists::get_list() as $item) {
-    add_action('pages-sidebar', 'createSideMenu', array($lists_plugin_id, $item['title'].' '.i18n_r('Lists/SIDEBAR_LABEL_MANAGER'), $lists_plugin_id.'_id_'.$item['id']));
+    // add a link in the admin tab 'theme'
+    foreach (Lists::get_list() as $key => $value) {
+        add_action('pages-sidebar', 'createSideMenu', array($lists_plugin_id, $value.' '.i18n_r('Lists/SIDEBAR_LABEL_MANAGER'), $lists_plugin_id.'_id_'.$key));
+    }
 }
+
+// class Lists_storage ?
 
 function Lists_show($content) {
     return Lists::process_show($content);

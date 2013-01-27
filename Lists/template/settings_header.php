@@ -8,5 +8,15 @@
 </div>
 </div>
 
+<script type="text/javascript">
+$(function() {
+<?php if (!empty($message)) : ?>
+    <?php // TODO: use a php function to show this block ?>
+    $('div.bodycontent').before('<div class="<?= $success ? 'updated' : 'error'; ?>" style="display:block;">'+<?= json_encode(implode("<br />\n", $message)) ?>+'</div>');
+    $(".updated, .error").fadeOut(500).fadeIn(500);
+<?php endif; ?>
+});
+</script>
+
 <div class="main" style="margin-top:-10px;">
 
