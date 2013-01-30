@@ -36,6 +36,7 @@ register_plugin(
 // debug('GSDATAOTHERPATH', GSDATAOTHERPATH);
 define('LISTSDATAPATH', GSDATAOTHERPATH.$lists_plugin_id.'/');
 define('LISTSDATACONFIGURATION', GSDATAOTHERPATH.$lists_plugin_id.'/'.'configuration.xml');
+define('LISTSREQUESTPREFIX', 'lists_item_');
 
 // Settings (TODO: get them from a real settings file, filled through the Lists-settings)
 if (!is_frontend()) {

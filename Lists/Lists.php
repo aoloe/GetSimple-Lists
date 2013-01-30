@@ -30,8 +30,14 @@ class Lists {
     public static function process_admin() {
         // debug('_REQUEST', $_REQUEST);
         if (array_key_exists('Lists_settings', $_REQUEST)) {
+            include(GSPLUGINPATH.self::$plugin_id.'/Lists_item.php');
+            $item = new Lists_item(self::$storage, self::$configuration);
+            if (array_key_exists('save', $_REQUEST)) {
+                $item->read($_REQUEST, LISTSREQUESTPREFIX);
+            } elseif (array_key_exists('save', $_REQUEST)) {
+            }
             include(GSPLUGINPATH.self::$plugin_id.'/Lists_administration.php');
-            $administration = new Lists_administration(self::$storage, self::$configuration);
+            $administration = new Lists_administration(self::$storage, self::$configuration, $item);
             $administration->execute();
             $administration->render();
         } else {

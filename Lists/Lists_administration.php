@@ -4,19 +4,19 @@ class Lists_administration {
     // dependencies
     protected $storage = null; // Lists_storage
     protected $settings = null; // Lists_settings
+    protected $item = null; // Lists_item
 
     protected $message = array();
     protected $action = "";
-    protected $item = null; // Lists_item_entity
 
-    public function Lists_administration($storage, $settings) {
+    public function Lists_administration($storage, $settings$, $item) {
         $this->storage = $storage;
         $this->settings = $settings;
+        $this->item = $item;
     }
 
 
     public function execute() {
-        $this->read();
         if (array_key_exists('save', $_REQUEST)) {
             if ($this->validate()) {
                 $this->write();
@@ -86,32 +86,6 @@ class Lists_administration {
 		}
         */
     } // Lists_settings::render()
-
-    /**
-     * read the current item (if any), from the $_REQUEST or from the storoage
-     */
-    public function read() {
-        $result = false;
-        if (array_key_exists('save', $_REQUEST)) {
-            if (!class_exists('Entity')) {
-                include(GSPLUGINPATH.Lists::get_plugin_id().'/Entity.php');
-            }
-            if (!class_exists('Lists_item_entity')) {
-                include_once(GSPLUGINPATH.Lists::get_plugin_id().'/Lists_item_entity.php');
-            }
-            $this->item = Lists_item_entity::factory()->read($_REQUEST, 'lists_item_');
-            $result = true;
-        } elseif (array_key_exists('lists_id', $_REQUEST)) {
-        }
-        if (isset($this->item) && $this->item->is_id("") && !$this->item->is_title("")) {
-            $id = preg_replace('/^[A-Za-z0-9]+$/', '', $this->item->get_title());
-            while ($id == "" || array_key_exists($id, $this->list)) {
-                $id = "";
-            }
-            $this->item->set_id($id);
-        }
-        return $result;
-    }
 
     public function write($item = null) {
         debug('item', $this->item);
