@@ -9,7 +9,7 @@ class Lists_administration {
     protected $message = array();
     protected $action = "";
 
-    public function Lists_administration($storage, $settings$, $item) {
+    public function Lists_administration($storage, $settings, $item) {
         $this->storage = $storage;
         $this->settings = $settings;
         $this->item = $item;
@@ -17,6 +17,7 @@ class Lists_administration {
 
 
     public function execute() {
+        $item->read($_REQUEST, LISTSREQUESTPREFIX);
         if (array_key_exists('save', $_REQUEST)) {
             if ($this->validate()) {
                 $this->write();
@@ -86,21 +87,6 @@ class Lists_administration {
 		}
         */
     } // Lists_settings::render()
-
-    public function write($item = null) {
-        debug('item', $this->item);
-   		$data = @new SimpleXMLExtended('<?xml version="1.0" encoding="UTF-8"?><specialpage></specialpage>');
-        $data->addChild('id', $this->item->get_id());
-        $data->addChild('title', $this->item->get_title());
-        $data->addChild('page_show', $this->item->get_page_show());
-        $data->addChild('page_create', $this->item->get_page_create());
-        $page_field = $data->addChild('page_field');
-        foreach ($this->item->get_page_field() as $item) {
-            $page_field->addChild($item);
-        }
-        debug('data', $data);
-   		// return XMLsave($data, $file);
-    }
 
     public function validate_mandatory($field, $label) {
         $result = true;

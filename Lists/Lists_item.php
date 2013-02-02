@@ -3,19 +3,29 @@
 class Lists_item {
     protected $item = null; // Lists_item_entity
 
-    public function Lists_item() {
+    public function Lists_item($entity) {
+        $this->item = $entity;
     }
 
     /**
      * read the current item (if any), from the $_REQUEST or from the storoage
      */
     public function read($data, $data_prefix = '') {
-        if (!class_exists('Entity')) {
-            include(GSPLUGINPATH.Lists::get_plugin_id().'/Entity.php');
+        $this->item->read($data, $data_prefix);
+    }
+
+    public function write() {
+        debug('item', $this->item);
+   		$data = @new SimpleXMLExtended('<?xml version="1.0" encoding="UTF-8"?><specialpage></specialpage>');
+        $data->addChild('id', $this->item->get_id());
+        $data->addChild('title', $ithis->tem->get_title());
+        $data->addChild('page_show', $ithis->tem->get_page_show());
+        $data->addChild('page_create', $ithis->tem->get_page_create());
+        $page_field = $data->addChild('page_field');
+        foreach ($this->item->get_page_field() as $item) {
+            $page_field->addChild($item);
         }
-        if (!class_exists('Lists_item_entity')) {
-            include_once(GSPLUGINPATH.Lists::get_plugin_id().'/Lists_item_entity.php');
-        }
-        $this->item = Lists_item_entity::factory()->read($data, $data_prefix);
+        debug('data', $data);
+   		// return XMLsave($data, $file);
     }
 }

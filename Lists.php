@@ -11,12 +11,14 @@ Author URI: http://www.ideale.ch/
 $lists_plugin_id = basename(__FILE__, ".php");
 
 // hack to get the link from the settings sidebar to go to the settings tab
+/*
 $lists_admin_tab = 'pages';
 if (basename($_SERVER['PHP_SELF']) == 'load.php' && @$_GET['id'] == $lists_plugin_id) {
   if (array_key_exists('Lists_settings', $_REQUEST)) {
       $lists_admin_tab = 'settings';
   }
 }
+*/
 
 # register plugin
 register_plugin(
@@ -26,7 +28,7 @@ register_plugin(
   'Ale Rimoldi',  //Plugin author
   'http://www.ideale.ch/', //author website
   'Manage Lists and Forms', //Plugin description
-  $lists_admin_tab, //page type - on which admin tab to display
+  'pages', //page type - on which admin tab to display
   'lists_admin'  //main function (administration)
 );
 
@@ -47,6 +49,7 @@ if (!is_frontend()) {
 
 include(GSPLUGINPATH.$lists_plugin_id.'/Lists.php');
 Lists::set_plugin_id($lists_plugin_id);
+Lists::set_plugin_info($plugin_info[$lists_plugin_id]);
 Lists::initialize();
 
 add_filter('content', 'Lists_show'); 
@@ -57,6 +60,7 @@ if (!is_frontend()) {
     foreach (Lists::get_list() as $key => $value) {
         add_action('pages-sidebar', 'createSideMenu', array($lists_plugin_id, $value.' '.i18n_r('Lists/SIDEBAR_LABEL_MANAGER'), $lists_plugin_id.'_id_'.$key));
     }
+    add_action('header','Lists_routing');
 }
 
 // class Lists_storage ?
@@ -68,6 +72,11 @@ function Lists_show($content) {
 function Lists_admin() {
     Lists::process_admin();
 }
+
+
+function Lists_routing(){
+    Lists::process_routing();
+} 
 
 /**
  * @param mixed $id a string or array defining the list the promotions have to be taken from
