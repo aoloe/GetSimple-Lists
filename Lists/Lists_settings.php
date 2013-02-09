@@ -57,7 +57,7 @@ class Lists_settings {
             } else {
                 // debug('message', $this->message);
                 // echo("<pre>".print_r(debug_backtrace(), 1)."</pre>");
-                $this->message->add_warning(sprintf(i18n_r('Lists/SETTINGS_ERROR_NOSETTINGS')));
+                $this->message->add_warning(i18n_r('Lists/SETTINGS_ERROR_NOSETTINGS'));
             }
             // debug('read() this->settings', $this->settings);
         }
@@ -100,11 +100,12 @@ class Lists_settings {
                 $item->addChild('id', $key);
                 $item->addChild('title', $value);
             }
-            // debug('data', $data);
+            debug('data', $data);
+            // $result = true;
             $result =  XMLsave($data, LISTSDATASETTINGS);
             // debug('result', $result);
         } else {
-            $this->message->add_error(sprintf(i18n_r('Lists/SETTINGS_ERROR_NOWRITESETTINGS')));
+            $this->message->add_error(i18n_r('Lists/SETTINGS_ERROR_NOWRITESETTINGS'));
         }
         return $result;
     }

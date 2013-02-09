@@ -1,3 +1,4 @@
+<?php function value($value) { echo ($value == '' ? '' : ' value = "'.$value.'"'); } ?>
 <style>
 .widesec input.text {
 	width: 92%;
@@ -6,20 +7,20 @@
 	width: 96%;
 }
 </style>
-<h3><?= i18n_r('Lists/SETTINGS_TITLE_NEWLIST') ?></h3>
+<h3><?= $list_name == '' ? i18n_r('Lists/SETTINGS_TITLE_NEWLIST') : $list_name ?></h3>
 
 <form class="largeform" action="load.php?id=<?= $plugin_id ?>&<?= $plugin_id ?>_settings=new" method="post" accept-charset="utf-8">
     <input type="hidden" name="lists_item_id" value="<?php echo $id; ?>" />
     <div>
         <p>
             <label for="lists_item_title"><?= i18n_r('Lists/FORM_LABEL_TITLE') ?></label>
-            <input type="text" class="text" name="lists_item_title" value="<?php echo $title; ?>" />
+            <input type="text" class="text" name="lists_item_title"<?= value($title) ?> />
         </p>
     </div>
     <div class="clear"></div>
     <div class="leftsec">
         <p>
-            <label for="page-url"><?= i18n_r('Show list on frontend page') ?></label>
+            <label for="page-url"><?= i18n_r('Lists/Show list on frontend page') ?></label>
             <select id="post-parent" name="post-parent" class="text" style="width:250px">
               <option value=""></option>
               <?php /* foreach ($pages as $slug => $title) { ?>
@@ -30,7 +31,7 @@
     </div>
     <div class="rightsec">
         <p>
-            <label for="lists_item_name"><?= i18n_r('Create new items on frontend page') ?></label>
+            <label for="lists_item_name"><?= i18n_r('Lists/Create new items on frontend page') ?></label>
             <select id="post-parent" name="post-parent" class="text" style="width:250px">
               <option value=""></option>
               <?php /* foreach ($pages as $slug => $title) { ?>

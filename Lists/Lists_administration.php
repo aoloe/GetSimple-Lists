@@ -45,7 +45,9 @@ class Lists_administration {
         $this->item->read($_REQUEST, LISTSREQUESTPREFIX);
         if (!$this->item->has_valid_id() && array_key_exists('Lists_id', $_REQUEST)) {
             // TODO: read from the corresponding xml file
-            if ($this->settings->has_list($_REQUEST['Lists_id'])) {
+            if (is_string($_REQUEST['Lists_id']) && $this->settings->has_list($_REQUEST['Lists_id'])) {
+                // debug('item', $this->item);
+                $this->item->read($_REQUEST['Lists_id']);
             }
         }
         // debug('item', $this->item);
@@ -65,6 +67,7 @@ class Lists_administration {
 
     // TODO: in the gsconfig it is possible to set a specific salt! it's probably a bad idea to use it, since dynamic generated salts are much better!
 
+    /*
     public function write($item = null) {
         // TODO: if it's a new one, add it to the list of elements and store the list
         // TODO: store the definition of this list
@@ -72,6 +75,7 @@ class Lists_administration {
         debug('item', $item);
         $this->settings->add_list($item);
     }
+    */
 
     public function render() {
         if (!class_exists('Template')) {
@@ -115,15 +119,25 @@ class Lists_administration {
                 echo $template->clear()->
                     set('plugin_id', Lists::get_plugin_id())->
                     set('list', $this->settings->get_list())->
-                    set('url_self', 'http://ww.getsimple.org/admin/load.php?id=Lists&Lists_settings')->
+                    set('url_self', 'http://ww.getsimple.org/admin/load.php?id=Lists&Lists_settings=edit')->
 
                     fetch(GSPLUGINPATH.Lists::get_plugin_id().'/template/settings_list.php');
             break;
             case 'new' :
                 echo $template->clear()->
                     set('plugin_id', Lists::get_plugin_id())->
+                    set('list_name', $this->item->get_title())->
                     set('id', '')->
                     set('title', '')->
+                    set('field_editable', array())->
+                    fetch(GSPLUGINPATH.Lists::get_plugin_id().'/template/settings_new.php');
+            break;
+            case 'edit' :
+                echo $template->clear()->
+                    set('plugin_id', Lists::get_plugin_id())->
+                    set('list_name', $this->item->get_title())->
+                    set('id', $this->item->get_id())->
+                    set('title', $this->item->get_title())->
                     set('field_editable', array())->
                     fetch(GSPLUGINPATH.Lists::get_plugin_id().'/template/settings_new.php');
             break;

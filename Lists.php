@@ -1,9 +1,5 @@
 <?php
 
-function backtrace() {
-    echo ("<pre>".print_r(debug_backtrace(), 1)."</pre>");
-}
-
 // error_reporting(E_ALL);
 // ini_set('display_errors', '1');
 
@@ -47,7 +43,7 @@ register_plugin(
 // debug('GSDATAOTHERPATH', GSDATAOTHERPATH);
 define('LISTSDATAPATH', GSDATAOTHERPATH.$lists_plugin_id.'/');
 define('LISTSDATASETTINGS', GSDATAOTHERPATH.$lists_plugin_id.'/'.'settings.xml');
-define('LISTSDATALISTSPATH', GSDATAOTHERPATH.$lists_plugin_id.'/'.'settings.xml');
+define('LISTS_DATALISTSPATH', GSDATAOTHERPATH.$lists_plugin_id.'/'.'list/');
 define('LISTSREQUESTPREFIX', 'lists_item_');
 
 // Settings (TODO: get them from a real settings file, filled through the Lists-settings)

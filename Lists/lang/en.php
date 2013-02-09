@@ -18,6 +18,7 @@ $i18n = array(
     'SETTINGS_NAVIGATIONDETAILS' => "Details",
     'SETTINGS_ERROR_NOSETTINGS' => "No settings could be found for the lists",
     'SETTINGS_ERROR_NOWRITESETTINGS' => "Cannot write the Lists settings",
+    'SETTINGS_ERROR_NOREADLIST' => "Cannot correctly read the %s list",
     'ITEM_WARNING_INVALIDID' => "Ignoring an invalid Id",
     'SETTINGS_LISTHEADTITLE' => "Lists",
     'SETTINGS_LISTHEADENTRIES' => "Number of entries",
