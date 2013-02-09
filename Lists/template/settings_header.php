@@ -11,8 +11,12 @@
 <script type="text/javascript">
 $(function() {
 <?php if (!empty($message)) : ?>
-    <?php // TODO: use a php function to show this block ?>
-    $('div.bodycontent').before('<div class="<?= $success ? 'updated' : 'error'; ?>" style="display:block;">'+<?= json_encode(implode("<br />\n", $message)) ?>+'</div>');
+    <?php foreach ($message as $key => $value) : // TODO: use a php function to show this block ?>
+        <?php if (!empty($value)) : ?>
+        <?php $box_css = array(LISTSMESSAGE_MESSAGE => 'notify', LISTSMESSAGE_SUCCESS => 'updated', LISTSMESSAGE_WARNING => 'notify', LISTSMESSAGE_ERROR => 'error'); ?>
+        $('div.bodycontent').before('<div class="<?= $box_css[$key] ?>" style="display:block;">'+<?= json_encode(implode("<br />\n", $value)) ?>+'</div>');
+        <?php endif; ?>
+    <?php endforeach; ?>
     $(".updated, .error").fadeOut(500).fadeIn(500);
 <?php endif; ?>
 });

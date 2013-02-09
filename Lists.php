@@ -1,4 +1,13 @@
 <?php
+
+function backtrace() {
+    echo ("<pre>".print_r(debug_backtrace(), 1)."</pre>");
+}
+
+// error_reporting(E_ALL);
+// ini_set('display_errors', '1');
+
+
 /*
 Plugin Name: Lists
 Description: Manage Lists and Forms
@@ -37,7 +46,8 @@ register_plugin(
  */
 // debug('GSDATAOTHERPATH', GSDATAOTHERPATH);
 define('LISTSDATAPATH', GSDATAOTHERPATH.$lists_plugin_id.'/');
-define('LISTSDATACONFIGURATION', GSDATAOTHERPATH.$lists_plugin_id.'/'.'configuration.xml');
+define('LISTSDATASETTINGS', GSDATAOTHERPATH.$lists_plugin_id.'/'.'settings.xml');
+define('LISTSDATALISTSPATH', GSDATAOTHERPATH.$lists_plugin_id.'/'.'settings.xml');
 define('LISTSREQUESTPREFIX', 'lists_item_');
 
 // Settings (TODO: get them from a real settings file, filled through the Lists-settings)
@@ -65,18 +75,21 @@ if (!is_frontend()) {
 
 // class Lists_storage ?
 
-function Lists_show($content) {
-    return Lists::process_show($content);
-}
-
-function Lists_admin() {
-    Lists::process_admin();
-}
-
-
 function Lists_routing(){
     Lists::process_routing();
 } 
+
+function Lists_show($content) {
+    // return Lists::process_show($content);
+}
+
+function Lists_admin() {
+    global $lists_plugin_id;
+    include(GSPLUGINPATH.$lists_plugin_id.'/Lists_administration.php');
+    Lists_administration::set_plugin_id($lists_plugin_id);
+    $admin = Lists_administration::factory();
+    $admin->process();
+}
 
 /**
  * @param mixed $id a string or array defining the list the promotions have to be taken from

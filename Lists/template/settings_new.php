@@ -10,7 +10,7 @@
 
 <form class="largeform" action="load.php?id=<?= $plugin_id ?>&<?= $plugin_id ?>_settings=new" method="post" accept-charset="utf-8">
     <input type="hidden" name="lists_item_id" value="<?php echo $id; ?>" />
-    <div class="widesec">
+    <div>
         <p>
             <label for="lists_item_title"><?= i18n_r('Lists/FORM_LABEL_TITLE') ?></label>
             <input type="text" class="text" name="lists_item_title" value="<?php echo $title; ?>" />

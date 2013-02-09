@@ -1,4 +1,5 @@
 <?php
+
 class Template {
     var $vars;
 

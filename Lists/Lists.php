@@ -1,5 +1,8 @@
 <?php
 /**
+ * There is some old (unused in this class). In the future it could become a class with common
+ * code to the different parts... but, more likely, it will disappear
+ *
  * The Lists class is just a glue class, setting up the environment, getting the calls
  * from the main plugin's file and dispatching them to objects doing the real work.
  * It's also doing controller and routing tasks.
@@ -12,11 +15,11 @@ class Lists {
     public static function set_plugin_info(& $plugin_info) {self::$plugin_info = & $plugin_info;}
     static protected $storage = null;
     static protected $message = null;
-    static protected $configuration = array();
+    static protected $settings = null;
     static public function get_list() {
         $result = array();
-        foreach (self::$configuration->get_list() as $item) {
-            $result[$item['id']] = $item['title'];
+        foreach (self::$settings->get_list() as $key => $value) {
+            $result[$key] = $value;
         }
         return $result;
     }
@@ -25,32 +28,15 @@ class Lists {
         include(GSPLUGINPATH.self::$plugin_id.'/Lists_message.php');
         include(GSPLUGINPATH.self::$plugin_id.'/Lists_storage.php');
         self::$storage = new Lists_storage();
-        include(GSPLUGINPATH.self::$plugin_id.'/Lists_configuration.php');
-        self::$configuration = new Lists_configuration(self::$storage);
-        self::$configuration->read();
+        include(GSPLUGINPATH.self::$plugin_id.'/Lists_settings.php');
+        if (!class_exists('Entity'))
+            include(GSPLUGINPATH.Lists::get_plugin_id().'/Entity.php');
+        include(GSPLUGINPATH.Lists::get_plugin_id().'/Lists_item_entity.php');
+        self::$settings = Lists_settings::get_instance();
+        self::$settings->read();
     }
 
     public static function process_admin() {
-        // debug('_REQUEST', $_REQUEST);
-        if (array_key_exists('Lists_settings', $_REQUEST)) {
-            if (!class_exists('Entity')) {
-                include(GSPLUGINPATH.Lists::get_plugin_id().'/Entity.php');
-            }
-            if (!class_exists('Lists_item_entity')) {
-                include_once(GSPLUGINPATH.Lists::get_plugin_id().'/Lists_item_entity.php');
-            }
-            $item_entity = Lists_item_entity::factory();
-            include(GSPLUGINPATH.self::$plugin_id.'/Lists_item.php');
-            $item = new Lists_item($item_entity);
-            include(GSPLUGINPATH.self::$plugin_id.'/Lists_administration.php');
-            if (array_key_exists('save', $_REQUEST)) {
-                $administration = new Lists_administration(self::$storage, self::$configuration, $item);
-            } elseif (array_key_exists('save', $_REQUEST)) {
-            }
-            $administration->render();
-        } else {
-            echo '<p>When I grow up I\'ll let you create  '.(array_key_exists('lists_id_a', $_REQUEST) ? 'A' : 'B').' lists.</p>';
-        }
     }
 
     public static function process_show($content) {
@@ -59,7 +45,7 @@ class Lists {
         $prepend = '';
         $append = '';
         $replace = '';
-        foreach (self::$configuration['list'] as $item) {
+        foreach (self::$settings['list'] as $item) {
             if ($item['show']['page'] == $url) {
                 switch ($item['show']['rule']) {
                     case 'prepend' :

@@ -31,7 +31,7 @@ class Entity {
         return $result;
     }
     public function __call($method, $args) {
-        $parameter = substr($method, 4);
+        $parameter = substr($method, strpos($method, '_') + 1);
         if (substr($method, 0, 4) == 'get_') {
             if (isset($this->$parameter)) {
                 return $this->$parameter;
