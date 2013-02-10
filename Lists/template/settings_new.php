@@ -10,6 +10,7 @@
 <h3><?= $list_name == '' ? i18n_r('Lists/SETTINGS_TITLE_NEWLIST') : $list_name ?></h3>
 
 <form class="largeform" action="load.php?id=<?= $plugin_id ?>&<?= $plugin_id ?>_settings=new" method="post" accept-charset="utf-8">
+    <input type="hidden" name="Lists_settings" value="edit" />
     <input type="hidden" name="lists_item_id" value="<?php echo $id; ?>" />
     <div>
         <p>
@@ -53,6 +54,11 @@
         <span>
             <input class="submit" type="submit" name="save" value="<?= i18n_r('Lists/FORM_LABEL_SAVE') ?>" />
         </span>
+    <?php if (!empty($id)) : ?>
+        <span>
+            <input class="submit" type="submit" name="delete" value="<?= i18n_r('Lists/FORM_LABEL_DELETE') ?>" />
+        </span>
+    <?php endif; ?>
     </p>
 </form>
 </form>

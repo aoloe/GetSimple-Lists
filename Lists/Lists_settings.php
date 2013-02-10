@@ -100,7 +100,7 @@ class Lists_settings {
                 $item->addChild('id', $key);
                 $item->addChild('title', $value);
             }
-            debug('data', $data);
+            // debug('data', $data);
             // $result = true;
             $result =  XMLsave($data, LISTSDATASETTINGS);
             // debug('result', $result);
@@ -113,8 +113,18 @@ class Lists_settings {
     /**
      * @param Lists_item $item
      */
-    public function add_list($item) {
+    public function set_list($item) {
         $this->settings['list'][$item->get_id()] = $item->get_title();
+    }
+
+    /**
+     * @param Lists_item $item
+     */
+    public function delete_list($item) {
+        if (array_key_exists($item->get_id(), $this->settings['list'])) {
+            unset($this->settings['list'][$item->get_id()]);
+        }
+        // debug('list', $this->settings['list']);
     }
 
     public function has_list($id) {

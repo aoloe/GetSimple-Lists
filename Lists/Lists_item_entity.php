@@ -6,6 +6,8 @@ class Lists_item_entity extends Entity {
     protected $page_show = '';
     protected $page_create = '';
     protected $page_field = array();
+    protected $field = array();
+    protected $entry = array();
     static public function factory() {
         return new Lists_item_entity();
     }

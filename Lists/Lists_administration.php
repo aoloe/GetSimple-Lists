@@ -55,11 +55,19 @@ class Lists_administration {
             if (array_key_exists('save', $_REQUEST)) {
                 if ($this->validate()) {
                     if ($this->item->has_valid_id() || $this->item->generate_id()) {
-                        $this->settings->add_list($this->item);
-                        $success = $this->settings->write() && $this->item->write();
+                        $this->settings->set_list($this->item);
+                        $this->settings->write() && $this->item->write();
                     }
                 }
-            } elseif (array_key_exists('save', $_REQUEST)) {
+            } elseif (array_key_exists('delete', $_REQUEST)) {
+                if ($this->item->has_valid_id()) {
+                    // debug('_REQUEST', $_REQUEST);
+                    $this->item->delete();
+                    $this->settings->delete_list($this->item);
+                    $this->settings->write();
+                    $this->item->clear();
+                    unset($_REQUEST['Lists_settings']);
+                }
             }
             $this->render();
         }
@@ -73,7 +81,7 @@ class Lists_administration {
         // TODO: store the definition of this list
         if (is_null($item)) $item = $this->item;
         debug('item', $item);
-        $this->settings->add_list($item);
+        $this->settings->set_list($item);
     }
     */
 
@@ -169,7 +177,7 @@ class Lists_administration {
 
     public function validate() {
         $result = true;
-        debug('$_REQUEST', $_REQUEST);
+        // debug('$_REQUEST', $_REQUEST);
         $result = $this->validate_mandatory('lists_item_title', i18n_r('Lists/FORM_LABEL_TITLE')) && $result;
         // $result = $this->validate_mandatory('lists_item_id', i18n_r('Lists/FORM_LABEL_ID')) && $result;
         return $result;

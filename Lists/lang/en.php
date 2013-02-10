@@ -5,6 +5,7 @@ $i18n = array(
     'FORM_LABEL_TITLE' => "Title",
     'FORM_LABEL_ID' => "Id",
     'FORM_LABEL_SAVE' => "Save",
+    'FORM_LABEL_DELETE' => "Delete",
     'SETTINGS_TITLE_ALLLISTS' => "All lists",
     'SETTINGS_TITLE_NOLISTS' => "No lists defined, yet",
     'SETTINGS_TITLE_NEWLIST' => "New list",

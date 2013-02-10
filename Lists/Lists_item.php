@@ -37,11 +37,11 @@ class Lists_item {
                     }
                 }
                 if ($this->item->get_id() == $data) {
-                    if (property_exists($list, 'fields')) {
-                        // debug('fields', $list->fields);
+                    if (property_exists($list, 'field')) {
+                        // debug('field', $list->field);
                     }
-                    if (property_exists($list, 'entries')) {
-                        // debug('entries', $list->entries);
+                    if (property_exists($list, 'entry')) {
+                        // debug('entry', $list->entry);
                     }
                     $result = true;
                 }
@@ -56,10 +56,20 @@ class Lists_item {
         // debug('this->item', $this->item);
     }
 
+    public function clear() {
+        $this->item->
+            set_id('')->
+            set_title('')->
+            set_page_create('')->
+            set_page_show('')->
+            set_field(array())->
+            set_entry(array());
+    }
+
     public function write() {
         $result = false;
         // debug('LISTSDATASETTINGS', LISTS_DATALISTSPATH);
-        $filename = $this->get_filename($data);
+        $filename = $this->get_filename($this->item->get_id());
         if (
             $this->has_valid_id() &&
             is_writable(
@@ -93,6 +103,17 @@ class Lists_item {
             // debug('result', $result);
         } else {
             $this->message->add_error(sprintf(i18n_r('Lists/SETTINGS_ERROR_NOWRITESETTINGS')));
+        }
+        return $result;
+    }
+
+    public function delete() {
+        $result = false;
+        // debug('item', $this->item);
+        $filename = $this->get_filename($this->item->get_id());
+        // debug('filename', $filename);
+        if (is_writable($filename)) {
+            $result = unlink($filename);
         }
         return $result;
     }
