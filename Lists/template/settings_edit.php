@@ -21,23 +21,23 @@
     <div class="clear"></div>
     <div class="leftsec">
         <p>
-            <label for="page-url"><?= i18n_r('Lists/Show list on frontend page') ?></label>
-            <select id="post-parent" name="post-parent" class="text" style="width:250px">
+            <label for="lists_page_show"><?= i18n_r('Lists/Show list on frontend page') ?></label>
+            <select id="lists_page_show" name="lists_post_show" class="text" style="width:250px">
               <option value=""></option>
-              <?php /* foreach ($pages as $slug => $title) { ?>
-              <option value="<?php echo htmlspecialchars($slug); ?>" <?php if ($slug == @$def['parent']) echo 'selected="selected"'; ?> ><?php echo htmlspecialchars($title).' ('.htmlspecialchars($slug).')'; ?></option>  
-              <?php } */ ?>
+              <?php foreach ($page_list as $key => $value) : ?>
+              <option value="<?php echo htmlspecialchars($key); ?>"<?= $key == $page_show ? ' selected="selected"' : '' ?> ><?php echo htmlspecialchars($value['title']).' ('.htmlspecialchars($value['slug']).')'; ?></option>  
+              <?php endforeach; ?>
             </select>
         </p>
     </div>
     <div class="rightsec">
         <p>
-            <label for="lists_item_name"><?= i18n_r('Lists/Create new items on frontend page') ?></label>
-            <select id="post-parent" name="post-parent" class="text" style="width:250px">
+            <label for="lists_page_edit"><?= i18n_r('Lists/Create new items on frontend page') ?></label>
+            <select id="lists_page_edit" name="lists_page_edit" class="text" style="width:250px">
               <option value=""></option>
-              <?php /* foreach ($pages as $slug => $title) { ?>
-              <option value="<?php echo htmlspecialchars($slug); ?>" <?php if ($slug == @$def['parent']) echo 'selected="selected"'; ?> ><?php echo htmlspecialchars($title).' ('.htmlspecialchars($slug).')'; ?></option>  
-              <?php } */ ?>
+              <?php foreach ($page_list as $key => $value) : ?>
+              <option value="<?php echo htmlspecialchars($key); ?>"<?= $key == $page_edit ? ' selected="selected"' : '' ?> ><?php echo htmlspecialchars($value['title']).' ('.htmlspecialchars($value['slug']).')'; ?></option>  
+              <?php endforeach; ?>
             </select>
         </p>
     </div>

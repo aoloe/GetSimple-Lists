@@ -62,6 +62,10 @@ add_filter('content', 'Lists_show');
 if (!is_frontend()) {
     add_action('settings-sidebar', 'createSideMenu', array($lists_plugin_id, i18n_r('Lists/SIDEBAR_LABEL_LISTS'), $lists_plugin_id.'_settings'));
 
+    // TODO: remove the link to the page (show/edit in frontend) if the page gets deleted
+    // (should there be a way to give a warning?)
+    // add_action('page-delete', 'myplugin_function');
+
     // add a link in the admin tab 'theme'
     foreach (Lists::get_list() as $key => $value) {
         add_action('pages-sidebar', 'createSideMenu', array($lists_plugin_id, $value.' '.i18n_r('Lists/SIDEBAR_LABEL_MANAGER'), $lists_plugin_id.'_id_'.$key));
@@ -81,8 +85,12 @@ function Lists_show($content) {
 
 function Lists_admin() {
     global $lists_plugin_id;
+    getPagesXmlValues(); // this populates $pagesArray, which is a global...
+    global $pagesArray;
+
     include(GSPLUGINPATH.$lists_plugin_id.'/Lists_administration.php');
     Lists_administration::set_plugin_id($lists_plugin_id);
+    Lists_administration::set_page_list($pagesArray);
     $admin = Lists_administration::factory();
     $admin->process();
 }

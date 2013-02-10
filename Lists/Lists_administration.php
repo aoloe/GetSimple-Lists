@@ -3,6 +3,8 @@
 class Lists_administration {
     static protected $plugin_id = '';
     public static function set_plugin_id($id) {self::$plugin_id = $id;}
+    static protected $page_list = '';
+    public static function set_page_list($list) {self::$page_list = $list;}
 
     // dependencies
     protected $storage = null; // Lists_storage
@@ -56,15 +58,20 @@ class Lists_administration {
                 if ($this->validate()) {
                     if ($this->item->has_valid_id() || $this->item->generate_id()) {
                         $this->settings->set_list($this->item);
-                        $this->settings->write() && $this->item->write();
+                        if ($this->settings->write() && $this->item->write()) {
+                            $this->message->add_success(i18n_r('Lists/SETTINGS_SAVED'));
+                        }
                     }
                 }
             } elseif (array_key_exists('delete', $_REQUEST)) {
                 if ($this->item->has_valid_id()) {
                     // debug('_REQUEST', $_REQUEST);
                     $this->item->delete();
-                    $this->settings->delete_list($this->item);
-                    $this->settings->write();
+                    $success = $this->settings->delete_list($this->item);
+                    $sucess = $this->settings->write() && $success;
+                    if ($success) {
+                        $this->message->add_success(i18n_r('Lists/SETTINGS_DELETED'));
+                    }
                     $this->item->clear();
                     unset($_REQUEST['Lists_settings']);
                 }
@@ -132,22 +139,18 @@ class Lists_administration {
                     fetch(GSPLUGINPATH.Lists::get_plugin_id().'/template/settings_list.php');
             break;
             case 'new' :
-                echo $template->clear()->
-                    set('plugin_id', Lists::get_plugin_id())->
-                    set('list_name', $this->item->get_title())->
-                    set('id', '')->
-                    set('title', '')->
-                    set('field_editable', array())->
-                    fetch(GSPLUGINPATH.Lists::get_plugin_id().'/template/settings_new.php');
-            break;
             case 'edit' :
+                // debug('page_list', self::$page_list);
                 echo $template->clear()->
                     set('plugin_id', Lists::get_plugin_id())->
                     set('list_name', $this->item->get_title())->
                     set('id', $this->item->get_id())->
                     set('title', $this->item->get_title())->
+                    set('page_list', $this::$page_list)->
+                    set('page_show', '')->
+                    set('page_edit', '')->
                     set('field_editable', array())->
-                    fetch(GSPLUGINPATH.Lists::get_plugin_id().'/template/settings_new.php');
+                    fetch(GSPLUGINPATH.Lists::get_plugin_id().'/template/settings_edit.php');
             break;
         }
         /*
