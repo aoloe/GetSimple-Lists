@@ -56,6 +56,11 @@ class Lists_item {
         // debug('this->item', $this->item);
     }
 
+    // for now, i don't see a better way to solve this... let's return the entity
+    public function get() {
+        return $this->item;
+    }
+
     public function clear() {
         $this->item->
             set_id('')->
@@ -81,7 +86,7 @@ class Lists_item {
             // TODO: check if the activating mechanism has a hook where the current install can be checked
             // and directories can be created in others/
             // TODO: move to storage and add the undo
-            // debug('item', $this->item);
+            debug('item', $this->item);
             $data = new SimpleXMLExtended('<?xml version="1.0" encoding="UTF-8"?><list></list>');
             $settings = $data->addChild('settings');
             $settings->addChild('id', $this->item->get_id());
@@ -98,7 +103,7 @@ class Lists_item {
                 $page_field->addChild($item);
             }
             */
-            // debug('data', $data);
+            debug('data', $data);
             $result =  XMLsave($data, $filename);
             // debug('result', $result);
         } else {

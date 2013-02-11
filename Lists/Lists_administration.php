@@ -146,9 +146,9 @@ class Lists_administration {
                     set('list_name', $this->item->get_title())->
                     set('id', $this->item->get_id())->
                     set('title', $this->item->get_title())->
-                    set('page_list', $this::$page_list)->
-                    set('page_show', '')->
-                    set('page_edit', '')->
+                    set('page_list', self::$page_list)->
+                    set('page_show', $this->item->get()->get_page_show())->
+                    set('page_edit', $this->item->get()->get_page_create())->
                     set('field_editable', array())->
                     fetch(GSPLUGINPATH.Lists::get_plugin_id().'/template/settings_edit.php');
             break;

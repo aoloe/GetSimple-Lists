@@ -32,11 +32,11 @@
     </div>
     <div class="rightsec">
         <p>
-            <label for="lists_page_edit"><?= i18n_r('Lists/Create new items on frontend page') ?></label>
-            <select id="lists_page_edit" name="lists_page_edit" class="text" style="width:250px">
+            <label for="lists_page_create"><?= i18n_r('Lists/Create new items on frontend page') ?></label>
+            <select id="lists_page_create" name="lists_page_create" class="text" style="width:250px">
               <option value=""></option>
               <?php foreach ($page_list as $key => $value) : ?>
-              <option value="<?php echo htmlspecialchars($key); ?>"<?= $key == $page_edit ? ' selected="selected"' : '' ?> ><?php echo htmlspecialchars($value['title']).' ('.htmlspecialchars($value['slug']).')'; ?></option>  
+              <option value="<?php echo htmlspecialchars($key); ?>"<?= $key == $page_create ? ' selected="selected"' : '' ?> ><?php echo htmlspecialchars($value['title']).' ('.htmlspecialchars($value['slug']).')'; ?></option>  
               <?php endforeach; ?>
             </select>
         </p>
