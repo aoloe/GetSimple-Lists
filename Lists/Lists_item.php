@@ -16,7 +16,7 @@ class Lists_item {
     }
 
     /**
-     * read the current item (if any), from the $_REQUEST or from the storoage
+     * read the current item (if any), from the $_REQUEST or from the storage
      * @param string/array $data the id of the item to be read from the file (string) or the data to be
      * read from the $_REQUEST (array)
      */
@@ -71,7 +71,15 @@ class Lists_item {
             set_entry(array());
     }
 
+    /*
+    function items_customfields_undo() {
+      return copy(GSBACKUPSPATH . 'other/' . IM_CUSTOMFIELDS_FILE, GSDATAOTHERPATH . IM_CUSTOMFIELDS_FILE);
+    }
+    */
+
     public function write() {
+        // TODO: add the undo
+        // if (!copy(GSDATAOTHERPATH . IM_CUSTOMFIELDS_FILE, GSBACKUPSPATH . 'other/' . IM_CUSTOMFIELDS_FILE)) return false;
         $result = false;
         // debug('LISTSDATASETTINGS', LISTS_DATALISTSPATH);
         $filename = $this->get_filename($this->item->get_id());
@@ -89,10 +97,10 @@ class Lists_item {
             debug('item', $this->item);
             $data = new SimpleXMLExtended('<?xml version="1.0" encoding="UTF-8"?><list></list>');
             $settings = $data->addChild('settings');
-            $settings->addChild('id', $this->item->get_id());
-            $settings->addChild('title', $this->item->get_title());
-            $settings->addChild('page_show', $this->item->get_page_show());
-            $settings->addChild('page_create', $this->item->get_page_create());
+            $settings->addChild('id')->addCData(htmlspecialchars($this->item->get_id()));
+            $settings->addChild('title')->addCData(htmlspecialchars($this->item->get_title()));
+            $settings->addChild('page_show')->addCData(htmlspecialchars($this->item->get_page_show()));
+            $settings->addChild('page_create')->addCData(htmlspecialchars($this->item->get_page_create()));
 
             $fields = $data->addChild('fields');
             $entries = $data->addChild('entries');

@@ -9,7 +9,7 @@ Plugin Name: Lists
 Description: Manage Lists and Forms
 Version: 0.1
 Author: Ale Rimoldi
-Author URI: http://www.ideale.ch/
+Author URI: ideale.ch
 */
 
 # get correct id for plugin
