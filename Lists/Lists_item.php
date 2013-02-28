@@ -3,16 +3,18 @@
 class Lists_item {
     protected $item = null; // Lists_item_entity
     protected $settings = null; // Lists_settings
+    protected $content_fields = null; // Lists_settings
     protected $message = null; // Lists_message
 
-    public function Lists_item($entity, $settings, $message) {
+    public function Lists_item($entity, $settings, $content_fields, $message) {
         $this->item = $entity;
         $this->settings = $settings;
+        $this->content_fields = $content_fields;
         $this->message = $message;
     }
 
     private function get_filename($id) {
-        return LISTS_DATALISTSPATH.$id.'.xml';
+        return LISTS_DATA_LIST_PATH.$id.'.xml';
     }
 
     /**
@@ -71,30 +73,37 @@ class Lists_item {
             set_entry(array());
     }
 
-    /*
-    function items_customfields_undo() {
-      return copy(GSBACKUPSPATH . 'other/' . IM_CUSTOMFIELDS_FILE, GSDATAOTHERPATH . IM_CUSTOMFIELDS_FILE);
+    function undo() {
+        $result = false;
+        // read LISTS_BACKUP_LIST and 
+        if ($this->read(LISTS_BACKUP_LIST)) {
+            // debug('item', $this->item);
+            $filename = $this->get_filename($this->item->get_id());
+            // debug('filename', $filename);
+            $result = copy(LISTS_BACKUP_LIST, $filename);
+        }
+        return $result;
     }
-    */
 
     public function write() {
         // TODO: add the undo
         // if (!copy(GSDATAOTHERPATH . IM_CUSTOMFIELDS_FILE, GSBACKUPSPATH . 'other/' . IM_CUSTOMFIELDS_FILE)) return false;
         $result = false;
-        // debug('LISTSDATASETTINGS', LISTS_DATALISTSPATH);
+        // debug('LISTS_DATA_SETTINGS', LISTS_DATA_LIST_PATH);
         $filename = $this->get_filename($this->item->get_id());
         if (
             $this->has_valid_id() &&
             is_writable(
                 file_exists($filename) ?
                 $filename :
-                LISTS_DATALISTSPATH
+                LISTS_DATA_LIST_PATH
             )
         ) {
+            $this->content_fields->write(Lists::get_plugin_id().'_'.$this->item->get_id());
             // TODO: check if the activating mechanism has a hook where the current install can be checked
             // and directories can be created in others/
             // TODO: move to storage and add the undo
-            debug('item', $this->item);
+            // debug('item', $this->item);
             $data = new SimpleXMLExtended('<?xml version="1.0" encoding="UTF-8"?><list></list>');
             $settings = $data->addChild('settings');
             $settings->addChild('id')->addCData(htmlspecialchars($this->item->get_id()));
@@ -111,10 +120,11 @@ class Lists_item {
                 $page_field->addChild($item);
             }
             */
-            debug('data', $data);
+            // debug('data', $data);
             $result =  XMLsave($data, $filename);
             // debug('result', $result);
         } else {
+            trigger_error("Cannot write ".$filename);
             $this->message->add_error(sprintf(i18n_r('Lists/SETTINGS_ERROR_NOWRITESETTINGS')));
         }
         return $result;

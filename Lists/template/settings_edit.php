@@ -60,5 +60,10 @@
         </span>
     <?php endif; ?>
     </p>
-</form>
+    <?= $content_fields ?>
+    <p>
+        <span>
+            <input class="submit" type="submit" name="save" value="<?= i18n_r('Lists/FORM_LABEL_SAVE') ?>" />
+        </span>
+    </p>
 </form>

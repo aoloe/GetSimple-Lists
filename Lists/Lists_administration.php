@@ -11,6 +11,7 @@ class Lists_administration {
     protected $settings = null; // Lists_settings
     protected $item = null; // Lists_item
     protected $message = null;
+    protected $content_fields = null;
 
     protected $action = "";
 
@@ -28,23 +29,26 @@ class Lists_administration {
         if (!class_exists('Lists_item_entity'))
             include(GSPLUGINPATH.self::$plugin_id.'/Lists_item_entity.php');
         $item_entity = Lists_item_entity::factory();
+        ContentFields::initialize();
+        $content_fields = new ContentFields($message);
         if (!class_exists('Lists_item'))
             include(GSPLUGINPATH.self::$plugin_id.'/Lists_item.php');
-        $item = new Lists_item($item_entity, $settings, $message);
-        $admin = new Lists_administration($storage, $item, $settings, $message);
+        $item = new Lists_item($item_entity, $settings, $content_fields, $message);
+        $admin = new Lists_administration($storage, $item, $settings, $content_fields, $message);
         return $admin;
     }
 
-    public function Lists_administration($storage, $item, $settings, $message) {
+    public function Lists_administration($storage, $item, $settings, $content_fields, $message) {
         $this->storage = $storage;
         $this->item = $item;
         $this->settings = $settings;
+        $this->content_fields = $content_fields;
         $this->message = $message;
     }
 
     public function process() {
-        // debug('_REQUEST', $_REQUEST);
-        $this->item->read($_REQUEST, LISTSREQUESTPREFIX);
+        debug('_REQUEST', $_REQUEST);
+        $this->item->read($_REQUEST, LISTS_REQUEST_PREFIX);
         if (!$this->item->has_valid_id() && array_key_exists('Lists_id', $_REQUEST)) {
             // TODO: read from the corresponding xml file
             if (is_string($_REQUEST['Lists_id']) && $this->settings->has_list($_REQUEST['Lists_id'])) {
@@ -59,7 +63,8 @@ class Lists_administration {
                     if ($this->item->has_valid_id() || $this->item->generate_id()) {
                         $this->settings->set_list($this->item);
                         if ($this->settings->write() && $this->item->write()) {
-                            $this->message->add_success(i18n_r('Lists/SETTINGS_SAVED'));
+                            // TODO: only offer the undo if a backup file has been created (that is, there was already a settings file!
+                            $this->message->add_success(i18n_r('Lists/SETTINGS_SAVED').' <a href="load.php?id='.self::$plugin_id.'&Lists_settings&List_id='.$this->item->get_id().'&undo">'.i18n_r('UNDO').'</a>');
                         }
                     }
                 }
@@ -74,6 +79,12 @@ class Lists_administration {
                     }
                     $this->item->clear();
                     unset($_REQUEST['Lists_settings']);
+                }
+            } elseif (array_key_exists('undo', $_REQUEST)) {
+                if ($this->settings->write() && $this->item->undo()) {
+                    $this->message->add_success(i18n_r('Lists/SETTINGS_RESTORED'));
+                } else {
+                    $this->message->add_success(i18n_r('Lists/SETTINGS_RESTOREFAILED'));
                 }
             }
             $this->render();
@@ -148,13 +159,13 @@ class Lists_administration {
                     set('title', $this->item->get_title())->
                     set('page_list', self::$page_list)->
                     set('page_show', $this->item->get()->get_page_show())->
-                    set('page_edit', $this->item->get()->get_page_create())->
+                    set('page_create', $this->item->get()->get_page_create())->
                     set('field_editable', array())->
+                    set('content_fields', $this->content_fields->render_admin_list())->
                     fetch(GSPLUGINPATH.Lists::get_plugin_id().'/template/settings_edit.php');
             break;
         }
         /*
-        global $contentfields; // TODO: use an object parameter as soon as we have an object...
 		$ImClass = new ItemsManager;
 		if(file_exists(ITEMDATAFILE))
 		{

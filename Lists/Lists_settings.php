@@ -34,8 +34,8 @@ class Lists_settings {
                 'list' => array()
             );
             // TODO: add the number of entries of each list in settings
-            if(is_readable(LISTSDATASETTINGS)) {
-                $settings = getXML(LISTSDATASETTINGS);
+            if(is_readable(LISTS_DATA_SETTINGS)) {
+                $settings = getXML(LISTS_DATA_SETTINGS);
                 // debug('read() settings', $settings);
                 if (property_exists($settings, 'list')) {
                     if ($settings->list->item->count() > 1) {
@@ -87,22 +87,26 @@ class Lists_settings {
 
     }
 
+    function undo() {
+      return copy(LISTS_BACKUP_SETTINGS, LISTS_DATA_SETTINGS);
+    }
+
     public function write() {
         $result = false;
-        // debug('LISTSDATASETTINGS', LISTSDATASETTINGS);
-        if (is_writable(dirname(LISTSDATASETTINGS))) {
+        // debug('LISTS_DATA_SETTINGS', LISTS_DATA_SETTINGS);
+        if (is_writable(dirname(LISTS_DATA_SETTINGS))) {
             // debug('settings', $this->settings);
-            // self::$settings = getXML(LISTSDATASETTINGS);
+            // self::$settings = getXML(LISTS_DATA_SETTINGS);
             $data = new SimpleXMLExtended('<?xml version="1.0" encoding="UTF-8"?><List_settings></List_settings>');
             $list = $data->addChild('list');
             foreach ($this->settings['list'] as $key => $value) {
                 $item = $list->addChild('item');
-                $item->addChild('id', $key);
-                $item->addChild('title', $value);
+                $item->addChild('id')->addCData(htmlspecialchars($key));
+                $item->addChild('title')->addCData(htmlspecialchars($value));
             }
             // debug('data', $data);
             // $result = true;
-            $result =  XMLsave($data, LISTSDATASETTINGS);
+            $result =  XMLsave($data, LISTS_DATA_SETTINGS);
             // debug('result', $result);
         } else {
             $this->message->add_error(i18n_r('Lists/SETTINGS_ERROR_NOWRITESETTINGS'));

@@ -41,10 +41,13 @@ register_plugin(
  * Define the plugin's wide settings. You may adapt them to match your GS install.
  */
 // debug('GSDATAOTHERPATH', GSDATAOTHERPATH);
-define('LISTSDATAPATH', GSDATAOTHERPATH.$lists_plugin_id.'/');
-define('LISTSDATASETTINGS', GSDATAOTHERPATH.$lists_plugin_id.'/'.'settings.xml');
-define('LISTS_DATALISTSPATH', GSDATAOTHERPATH.$lists_plugin_id.'/'.'list/');
-define('LISTSREQUESTPREFIX', 'lists_item_');
+define('LISTS_DATA_PATH', GSDATAOTHERPATH.$lists_plugin_id.'/');
+define('LISTS_BACKUP_PATH', GSBACKUPSPATH.$lists_plugin_id.'/');
+define('LISTS_DATA_SETTINGS', LISTS_DATA_PATH.'settings.xml');
+define('LISTS_BACKUP_SETTINGS', LISTS_BACKUP_PATH.'settings.xml');
+define('LISTS_DATA_LIST_PATH', LISTS_DATA_PATH.'list/');
+define('LISTS_BACKUP_LIST', LISTS_BACKUP_PATH.'list.xml');
+define('LISTS_REQUEST_PREFIX', 'lists_item_');
 
 // Settings (TODO: get them from a real settings file, filled through the Lists-settings)
 if (!is_frontend()) {
