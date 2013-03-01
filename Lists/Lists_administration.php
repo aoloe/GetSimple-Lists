@@ -48,7 +48,7 @@ class Lists_administration {
     }
 
     public function process() {
-        debug('_REQUEST', $_REQUEST);
+        // debug('_REQUEST', $_REQUEST);
         $this->item->read($_REQUEST, LISTS_REQUEST_PREFIX);
         if (!$this->item->has_valid_id() && array_key_exists('Lists_id', $_REQUEST)) {
             // TODO: read from the corresponding xml file

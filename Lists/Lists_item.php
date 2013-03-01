@@ -47,6 +47,7 @@ class Lists_item {
                     }
                     $result = true;
                 }
+                $this->content_fields->read(Lists::get_plugin_id().'_'.$this->item->get_id());
             }
             if (!$result) {
                 $this->message->add_error(sprintf(i18n_r('Lists/SETTINGS_ERROR_NOREADLIST'), $data));
