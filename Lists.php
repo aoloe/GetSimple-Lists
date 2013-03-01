@@ -59,6 +59,9 @@ if (!is_frontend()) {
 include(GSPLUGINPATH.$lists_plugin_id.'/Lists.php');
 Lists::set_plugin_id($lists_plugin_id);
 Lists::set_plugin_info($plugin_info[$lists_plugin_id]);
+// TODO: we probably don't want to initialize Lists before it's really needed...
+// The problem is that we need it for initializing the list of lists and the pages related triggers.
+// FIX: create a small cache eacht time it's saved and statically read from that cache?
 Lists::initialize();
 
 add_filter('content', 'Lists_show'); 

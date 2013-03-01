@@ -29,6 +29,7 @@ class Lists_administration {
         if (!class_exists('Lists_item_entity'))
             include(GSPLUGINPATH.self::$plugin_id.'/Lists_item_entity.php');
         $item_entity = Lists_item_entity::factory();
+        // include(GSPLUGINPATH.'ContentFields/ContentFields.php');
         ContentFields::initialize();
         $content_fields = new ContentFields($message);
         if (!class_exists('Lists_item'))
