@@ -1,6 +1,7 @@
 <?php
 $i18n = array(
     'TITLE_LISTS_SETTINGS' => "Lists",
+    'ERROR_CACHENOWRITE' => "Could not write the cache file.",
     'ERROR_EMPTY_FIELD' => "The %s must not be empty.",
     'FORM_LABEL_TITLE' => "Title",
     'FORM_LABEL_ID' => "Id",
@@ -9,6 +10,8 @@ $i18n = array(
     'SETTINGS_TITLE_ALLLISTS' => "All lists",
     'SETTINGS_TITLE_NOLISTS' => "No lists defined, yet",
     'SETTINGS_TITLE_NEWLIST' => "New list",
+    'SETTINGS_FORM_ONPAGE' => "On page",
+    'SETTINGS_FORM_FRONTENDCREATE' => "Create new items in the frontend",
     'SIDEBAR_LABEL_MANAGER' => "Manager",
     'SETTINGS_LABEL_ID' => "Id",
     'SETTINGS_LABEL_NAME' => "List name",

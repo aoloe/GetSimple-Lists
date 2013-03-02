@@ -12,10 +12,10 @@ class Lists_settings {
     public static function get_instance() {
         if (is_null(self::$instance)) {
             if (!class_exists('Lists_storage'))
-                include(GSPLUGINPATH.Lists::$get_plugin_id().'/Lists_storage.php');
+                include(LISTS_PLUGIN_PATH.'/Lists_storage.php');
             $storage = new Lists_storage();
             if (!class_exists('Lists_message'))
-                include(GSPLUGINPATH.Lists::$get_plugin_id().'/Lists_message.php');
+                include(LISTS_PLUGIN_PATH.'/Lists_message.php');
             $message = Lists_message::get_instance();
             self::$instance = new Lists_settings($storage, $message);
         }

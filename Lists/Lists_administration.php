@@ -17,23 +17,23 @@ class Lists_administration {
 
     public static function factory() {
         if (!class_exists('Lists_message'))
-            include(GSPLUGINPATH.self::$plugin_id.'/Lists_message.php');
+            include(LISTS_PLUGIN_PATH.'/Lists_message.php');
         $message = Lists_message::get_instance();
         if (!class_exists('Lists_settings'))
-            include(GSPLUGINPATH.self::$plugin_id.'/Lists_settings.php');
+            include(LISTS_PLUGIN_PATH.'/Lists_settings.php');
         $settings = Lists_settings::get_instance();
         $settings->read();
         if (!class_exists('Lists_storage'))
-            include(GSPLUGINPATH.self::$plugin_id.'/Lists_storage.php');
+            include(LISTS_PLUGIN_PATH.'/Lists_storage.php');
         $storage = new Lists_storage();
         if (!class_exists('Lists_item_entity'))
-            include(GSPLUGINPATH.self::$plugin_id.'/Lists_item_entity.php');
+            include(LISTS_PLUGIN_PATH.'/Lists_item_entity.php');
         $item_entity = Lists_item_entity::factory();
         // include(GSPLUGINPATH.'ContentFields/ContentFields.php');
         ContentFields::initialize();
         $content_fields = new ContentFields($message);
         if (!class_exists('Lists_item'))
-            include(GSPLUGINPATH.self::$plugin_id.'/Lists_item.php');
+            include(LISTS_PLUGIN_PATH.'/Lists_item.php');
         $item = new Lists_item($item_entity, $settings, $content_fields, $message);
         $admin = new Lists_administration($storage, $item, $settings, $content_fields, $message);
         return $admin;
@@ -90,19 +90,7 @@ class Lists_administration {
             }
             $this->render();
         }
-    }
-
-    // TODO: in the gsconfig it is possible to set a specific salt! it's probably a bad idea to use it, since dynamic generated salts are much better!
-
-    /*
-    public function write($item = null) {
-        // TODO: if it's a new one, add it to the list of elements and store the list
-        // TODO: store the definition of this list
-        if (is_null($item)) $item = $this->item;
-        debug('item', $item);
-        $this->settings->set_list($item);
-    }
-    */
+    } // Lists_administration::process()
 
     public function render() {
         if (!class_exists('Template')) {
@@ -159,8 +147,8 @@ class Lists_administration {
                     set('id', $this->item->get_id())->
                     set('title', $this->item->get_title())->
                     set('page_list', self::$page_list)->
-                    set('page_show', $this->item->get()->get_page_show())->
-                    set('page_create', $this->item->get()->get_page_create())->
+                    set('page', $this->item->get()->get_page())->
+                    set('frontend_create', $this->item->get()->get_frontend_create())->
                     set('field_editable', array())->
                     set('content_fields', $this->content_fields->render_admin_list())->
                     fetch(GSPLUGINPATH.Lists::get_plugin_id().'/template/settings_edit.php');
@@ -181,6 +169,7 @@ class Lists_administration {
         */
     } // Lists_settings::render()
 
+    // TODO: move to a Validate class?
     public function validate_mandatory($field, $label) {
         $result = true;
         if (!array_key_exists($field, $_REQUEST) || $_REQUEST[$field] === '') {

@@ -6,6 +6,29 @@ class Lists_item {
     protected $content_fields = null; // Lists_settings
     protected $message = null; // Lists_message
 
+    static function factory() {
+        if (!class_exists('Lists_message'))
+            include(LISTS_PLUGIN_PATH.'/Lists_message.php');
+        $message = Lists_message::get_instance();
+        if (!class_exists('Lists_settings'))
+            include(LISTS_PLUGIN_PATH.'/Lists_settings.php');
+        $settings = Lists_settings::get_instance();
+        $settings->read();
+        if (!class_exists('Lists_storage'))
+            include(LISTS_PLUGIN_PATH.'/Lists_storage.php');
+        $storage = new Lists_storage();
+        if (!class_exists('Lists_item_entity'))
+            include(LISTS_PLUGIN_PATH.'/Lists_item_entity.php');
+        $item_entity = Lists_item_entity::factory();
+        // include(GSPLUGINPATH.'ContentFields/ContentFields.php');
+        ContentFields::initialize();
+        $content_fields = new ContentFields($message);
+        if (!class_exists('Lists_item'))
+            include(LISTS_PLUGIN_PATH.'/Lists_item.php');
+        return new Lists_item($item_entity, $settings, $content_fields, $message);
+    }
+
+
     public function Lists_item($entity, $settings, $content_fields, $message) {
         $this->item = $entity;
         $this->settings = $settings;
@@ -33,7 +56,7 @@ class Lists_item {
                 if (property_exists($list, 'settings')) {
                     $settings = $list->settings;
                     // debug('settings', $settings);
-                    foreach (array('id', 'title', 'page_create', 'page_show') as $item) {
+                    foreach (array('id', 'title', 'page', 'frontend_create') as $item) {
                         $setter = 'set_'.$item;
                         $this->item->$setter(property_exists($settings, $item) ? (string) $settings->$item : '');
                     }
@@ -53,6 +76,8 @@ class Lists_item {
                 $this->message->add_error(sprintf(i18n_r('Lists/SETTINGS_ERROR_NOREADLIST'), $data));
             }
         } elseif (is_array($data)) {
+            // debug('data', $data);
+            // debug('data_prefix', $data_prefix);
             $this->item->read($data, $data_prefix);
             $result = true;
         }
@@ -68,8 +93,8 @@ class Lists_item {
         $this->item->
             set_id('')->
             set_title('')->
-            set_page_create('')->
-            set_page_show('')->
+            set_page('')->
+            set_frontend_create('')->
             set_field(array())->
             set_entry(array());
     }
@@ -109,8 +134,8 @@ class Lists_item {
             $settings = $data->addChild('settings');
             $settings->addChild('id')->addCData(htmlspecialchars($this->item->get_id()));
             $settings->addChild('title')->addCData(htmlspecialchars($this->item->get_title()));
-            $settings->addChild('page_show')->addCData(htmlspecialchars($this->item->get_page_show()));
-            $settings->addChild('page_create')->addCData(htmlspecialchars($this->item->get_page_create()));
+            $settings->addChild('page')->addCData(htmlspecialchars($this->item->get_page()));
+            $settings->addChild('frontend_create')->addCData(htmlspecialchars($this->item->get_frontend_create()));
 
             $fields = $data->addChild('fields');
             $entries = $data->addChild('entries');

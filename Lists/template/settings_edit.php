@@ -21,24 +21,22 @@
     <div class="clear"></div>
     <div class="leftsec">
         <p>
-            <label for="lists_page_show"><?= i18n_r('Lists/Show list on frontend page') ?></label>
-            <select id="lists_page_show" name="lists_post_show" class="text" style="width:250px">
+            <label for="lists_item_page"><?= i18n_r('Lists/SETTINGS_FORM_ONPAGE') ?></label>
+            <select id="lists_item_page" name="lists_item_page" class="text" style="width:250px">
               <option value=""></option>
               <?php foreach ($page_list as $key => $value) : ?>
-              <option value="<?php echo htmlspecialchars($key); ?>"<?= $key == $page_show ? ' selected="selected"' : '' ?> ><?php echo htmlspecialchars($value['title']).' ('.htmlspecialchars($value['slug']).')'; ?></option>  
+              <option value="<?php echo htmlspecialchars($key); ?>"<?= $key == $page ? ' selected="selected"' : '' ?> ><?php echo htmlspecialchars($value['title']).' ('.htmlspecialchars($value['slug']).')'; ?></option>  
               <?php endforeach; ?>
             </select>
         </p>
     </div>
     <div class="rightsec">
-        <p>
-            <label for="lists_page_create"><?= i18n_r('Lists/Create new items on frontend page') ?></label>
-            <select id="lists_page_create" name="lists_page_create" class="text" style="width:250px">
-              <option value=""></option>
-              <?php foreach ($page_list as $key => $value) : ?>
-              <option value="<?php echo htmlspecialchars($key); ?>"<?= $key == $page_create ? ' selected="selected"' : '' ?> ><?php echo htmlspecialchars($value['title']).' ('.htmlspecialchars($value['slug']).')'; ?></option>  
-              <?php endforeach; ?>
-            </select>
+        <p class="inline">
+            <input type="checkbox" id="lists_item_frontend_create" name="lists_item_frontend_create" class="text"<?= $frontend_create ? ' checked="checked"' : '' ?> />
+            <label for="lists_item_frontend_create"><?= i18n_r('Lists/SETTINGS_FORM_FRONTENDCREATE') ?></label>
+            <?php /*
+            <p class="inline" ><input name="show_htmleditor" id="show_htmleditor" type="checkbox" value="1" <?php echo $editorchck; ?> /> &nbsp;<label for="show_htmleditor" ><?php i18n('ENABLE_HTML_ED');?></label></p>
+            */ ?>
         </p>
     </div>
     <?php if (!empty($field_editable)) : ?>

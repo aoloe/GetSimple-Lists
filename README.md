@@ -41,3 +41,5 @@ other thinks to check
 
 - next step is geting from i18n_specialpages the way it enforeces mandatory fields( maybe introduce http://parsleyjs.org/ for client side checks)
 - setup ww.getsimple.org
+- add an "order by" field (empty for manual, otherwise autoamtic by a field)
+- find a "clean" way to attach a filter to the display of the list (on this page, show all the pages with this filter... or let the user activate the filter: show all the entries with year 2011, or simply paginate through the items)

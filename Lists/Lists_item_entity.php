@@ -3,8 +3,8 @@
 class Lists_item_entity extends Entity {
     protected $id = '';
     protected $title = '';
-    protected $page_show = '';
-    protected $page_create = '';
+    protected $page = '';
+    protected $frontend_create = '';
     protected $page_field = array();
     protected $field = array();
     protected $entry = array();

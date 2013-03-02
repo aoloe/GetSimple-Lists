@@ -13,6 +13,8 @@ class Lists {
     public static function get_plugin_id() {return self::$plugin_id;}
     static protected $plugin_info = array();
     public static function set_plugin_info(& $plugin_info) {self::$plugin_info = & $plugin_info;}
+    static protected $cache = null;
+    public static function get_cache() {return self::$cache;}
     static protected $storage = null;
     static protected $message = null;
     static protected $settings = null;
@@ -24,21 +26,98 @@ class Lists {
         return $result;
     }
 
+    // TODO: is it really needed?
     public static function initialize() {
-        include(GSPLUGINPATH.self::$plugin_id.'/Lists_message.php');
-        include(GSPLUGINPATH.self::$plugin_id.'/Lists_storage.php');
+        include(LISTS_PLUGIN_PATH.'/Lists_message.php');
+        include(LISTS_PLUGIN_PATH.'/Lists_storage.php');
         self::$storage = new Lists_storage();
-        include(GSPLUGINPATH.self::$plugin_id.'/Lists_settings.php');
+        include(LISTS_PLUGIN_PATH.'/Lists_settings.php');
         if (!class_exists('Entity'))
-            include(GSPLUGINPATH.Lists::get_plugin_id().'/Entity.php');
-        include(GSPLUGINPATH.Lists::get_plugin_id().'/Lists_item_entity.php');
+            include(LISTS_PLUGIN_PATH.'/Entity.php');
+        include(LISTS_PLUGIN_PATH.'/Lists_item_entity.php');
         self::$settings = Lists_settings::get_instance();
         self::$settings->read();
-    }
+    } // Lists::initialize()
 
-    public static function process_admin() {
-    }
+    /**
+     * read the cache with the information needed by the Lists plugin to route itself
+     */
+    public static function read_cache() {
+        if (is_null(self::$cache)) {
+            if (is_readable(LISTS_CACHE_FILE)) {
+                $data = getXML(LISTS_CACHE_FILE);
+                // debug('data', $data);
+                $cache = array (
+                    'list' => array(),
+                    'page' => array(),
+                    'global' => array(),
+                );
+                foreach ($data->list->item as $item) {
+                    $cache['list'][(string) $item->list_id] = (string) $item->title;
+                }
+                foreach ($data->page->item as $item) {
+                    $cache['page'][(string) $item->page_id] = (string) $item->list_id;
+                }
+                $cache['global'][] = (string) $data->global->list_id;
+                // debug('cache', $cache);
+                self::$cache = $cache;
+            } else {
+                self::write_cache();
+            }
+        }
+    } // Lists::read_cache()
 
+    /**
+     * create a cache with the information needed by the Lists plugin to route itself
+     */
+    public static function write_cache($list_item_name = null) {
+        $data = new SimpleXMLExtended('<?xml version="1.0" encoding="UTF-8"?><cache></cache>');
+        $data_list = $data->addChild('list'); // list of the lists (list_id => title)
+        $data_page = $data->addChild('page'); // pages with a list (page_id => list_id)
+        $data_global = $data->addChild('global'); // lists not attached to a page (list_id)
+
+        include_once(LISTS_PLUGIN_PATH.'/Lists_settings.php');
+        $settings = Lists_settings::get_instance();
+        $settings->read();
+        include_once(LISTS_PLUGIN_PATH.'/Lists_item.php');
+        $list_item = Lists_item::factory();
+        // debug('settings', $settings);
+        $list_item_name = (
+            is_null($list_item_name) ?
+            array_keys($settings->get_list()) :
+            (
+                is_string($list_item_name) ?
+                array($list_item_name) :
+                $list_item_name
+            )
+        );
+        foreach ($list_item_name as $item) {
+            $list_item->read($item);
+            $entity = $list_item->get();
+            // debug('entity', $entity);
+            $data_item = $data_list->addChild('item');
+            $data_item->addChild('list_id')->addCData(htmlspecialchars($item));
+            $data_item->addChild('title')->addCData(htmlspecialchars($entity->get_title()));
+            if ($page = $entity->get_page()) {
+                $data_item = $data_page->addChild('item');
+                $data_item->addChild('page_id')->addCData(htmlspecialchars($page));
+                $data_item->addChild('list_id')->addCData(htmlspecialchars($item));
+            } else {
+                $data_global->addChild('list_id')->addCData(htmlspecialchars($item));
+            }
+        }
+        // debug('data', $data);
+        // debug('LISTS_CACHE_FILE', LISTS_CACHE_FILE);
+        if (!XMLsave($data, LISTS_CACHE_FILE)) {
+            trigger_error("Cannot write ".LISTS_CACHE_FILE);
+            if (class_exists('Lists_message')) {
+                Lists_message::get_instance()->add_error(sprintf(i18n_r('Lists/ERROR_CACHENOWRITE')));
+            }
+        }
+
+    } // Lists::write_cache()
+
+    // TODO: very likely, move this to Lists_show.php
     public static function process_show($content) {
         $result = '';
         $url = strval(get_page_slug(FALSE));
