@@ -46,6 +46,8 @@ if (!is_frontend()) {
     i18n_merge($lists_plugin_id, substr($LANG,0,2)); 
 }
 
+include(LISTS_PLUGIN_PATH.'/Lists_message.php');
+
 include(LISTS_PLUGIN_PATH.'/Lists.php');
 Lists::set_plugin_id($lists_plugin_id);
 Lists::set_plugin_info($plugin_info[$lists_plugin_id]);

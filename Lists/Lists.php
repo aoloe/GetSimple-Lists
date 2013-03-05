@@ -16,7 +16,6 @@ class Lists {
     static protected $cache = null;
     public static function get_cache() {return self::$cache;}
     static protected $storage = null;
-    static protected $message = null;
     static protected $settings = null;
     static public function get_list() {
         $result = array();
@@ -28,7 +27,8 @@ class Lists {
 
     // TODO: is it really needed?
     public static function initialize() {
-        include(LISTS_PLUGIN_PATH.'/Lists_message.php');
+        if (!class_exists('Lists_message'))
+            include(LISTS_PLUGIN_PATH.'/Lists_message.php');
         include(LISTS_PLUGIN_PATH.'/Lists_storage.php');
         self::$storage = new Lists_storage();
         include(LISTS_PLUGIN_PATH.'/Lists_settings.php');
@@ -42,10 +42,12 @@ class Lists {
     /**
      * read the cache with the information needed by the Lists plugin to route itself
      */
-    public static function read_cache() {
+    public static function read_cache($data = null) {
         if (is_null(self::$cache)) {
-            if (is_readable(LISTS_CACHE_FILE)) {
-                $data = getXML(LISTS_CACHE_FILE);
+            if (isset($data) || is_readable(LISTS_CACHE_FILE)) {
+                if (is_null($data)) {
+                    $data = getXML(LISTS_CACHE_FILE);
+                }
                 // debug('data', $data);
                 $cache = array (
                     'list' => array(),
@@ -58,19 +60,30 @@ class Lists {
                 foreach ($data->page->item as $item) {
                     $cache['page'][(string) $item->page_id] = (string) $item->list_id;
                 }
-                $cache['global'][] = (string) $data->global->list_id;
+                foreach ($data->global->list_id as $item) {
+                    $cache['global'][] = (string) $item;
+                }
                 // debug('cache', $cache);
                 self::$cache = $cache;
             } else {
                 self::write_cache();
             }
         }
+        // debug('cache', self::$cache);
     } // Lists::read_cache()
 
     /**
      * create a cache with the information needed by the Lists plugin to route itself
      */
     public static function write_cache($list_item_name = null) {
+        // debug('LISTS_CACHE_FILE', LISTS_CACHE_FILE);
+        // debug('LISTS_CACHE_PATH', LISTS_CACHE_PATH);
+        self::$cache = array(
+            'list' => array(),
+            'page' => array(),
+            'global' => array(),
+        );
+
         $data = new SimpleXMLExtended('<?xml version="1.0" encoding="UTF-8"?><cache></cache>');
         $data_list = $data->addChild('list'); // list of the lists (list_id => title)
         $data_page = $data->addChild('page'); // pages with a list (page_id => list_id)
@@ -108,13 +121,25 @@ class Lists {
         }
         // debug('data', $data);
         // debug('LISTS_CACHE_FILE', LISTS_CACHE_FILE);
-        if (!XMLsave($data, LISTS_CACHE_FILE)) {
-            trigger_error("Cannot write ".LISTS_CACHE_FILE);
+        if (is_writable(LISTS_CACHE_FILE) || is_writable(LISTS_CACHE_PATH)) {
+            if (!XMLsave($data, LISTS_CACHE_FILE)) {
+                trigger_error("Cannot write ".LISTS_CACHE_FILE);
+                if (class_exists('Lists_message')) {
+                    Lists_message::get_instance()->add_error(sprintf(i18n_r('Lists/ERROR_CACHENOWRITE')));
+                }
+                self::$cache = null;
+            }
+        } else { // if is_writable cache
             if (class_exists('Lists_message')) {
+                trigger_error("Cannot write ".LISTS_CACHE_FILE);
                 Lists_message::get_instance()->add_error(sprintf(i18n_r('Lists/ERROR_CACHENOWRITE')));
             }
-        }
+            self::$cache = null;
+        } // else is_writable cache
 
+        if (isset($data)) {
+            self::read_cache($data);
+        }
     } // Lists::write_cache()
 
     // TODO: very likely, move this to Lists_show.php
