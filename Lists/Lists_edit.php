@@ -29,7 +29,7 @@ class Lists_edit {
         if (!class_exists('Lists_item_entity'))
             include(LISTS_PLUGIN_PATH.'/Lists_item_entity.php');
         $item_entity = Lists_item_entity::factory();
-        // include(GSPLUGINPATH.'ContentFields/ContentFields.php');
+        // include(CONTENTFIELDS_PLUGIN_PATH.'ContentFields.php');
         ContentFields::initialize();
         $content_fields = new ContentFields($message);
         if (!class_exists('Lists_item'))
@@ -55,9 +55,11 @@ class Lists_edit {
     public function render() {
         //  TODO: in list mode show the whole page (action), in item edit mode only show the item
         if (!class_exists('Template')) {
-            include(GSPLUGINPATH.Lists::get_plugin_id().'/Template.php');
+            include(LISTS_PLUGIN_PATH.'/Template.php');
         }
-        echo("chuila");
+        echo Template::factory()->
+            set('plugin_id', Lists::get_plugin_id())->
+            fetch(LISTS_TEMPLATE_PATH.'edit_list.php');
     } // Lists_settings::render()
 
 } // Lists_edit

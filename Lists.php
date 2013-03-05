@@ -34,6 +34,7 @@ define('LISTS_DATA_PATH', GSDATAOTHERPATH.$lists_plugin_id.'/');
 define('LISTS_BACKUP_PATH', GSBACKUPSPATH.$lists_plugin_id.'/');
 define('LISTS_CACHE_PATH', LISTS_DATA_PATH.'cache/');
 define('LISTS_CACHE_FILE', LISTS_CACHE_PATH.'Lists.xml');
+define('LISTS_TEMPLATE_PATH', LISTS_PLUGIN_PATH.'template/');
 define('LISTS_DATA_SETTINGS', LISTS_DATA_PATH.'settings.xml');
 define('LISTS_BACKUP_SETTINGS', LISTS_BACKUP_PATH.'settings.xml');
 define('LISTS_DATA_LIST_PATH', LISTS_DATA_PATH.'list/');
