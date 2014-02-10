@@ -1,30 +1,26 @@
 <?php
+/**
+ * Manages the general settings of the plugin (none for now) and the list of lists
+ */
 
 class Lists_settings {
     // dependencies
     static protected $instance = null;
 
     protected $storage = null;
-    protected $message = null;
-
     protected $settings = null;
 
     public static function get_instance() {
         if (is_null(self::$instance)) {
-            if (!class_exists('Lists_storage'))
-                include(LISTS_PLUGIN_PATH.'/Lists_storage.php');
-            $storage = new Lists_storage();
-            if (!class_exists('Lists_message'))
-                include(LISTS_PLUGIN_PATH.'/Lists_message.php');
-            $message = Lists_message::get_instance();
-            self::$instance = new Lists_settings($storage, $message);
+            // $message = GS_Message::get_instance();
+            $storage = GS_Storage::get_instance();
+            self::$instance = new Lists_settings($storage);
         }
         return self::$instance;
     }
 
-    public function Lists_settings($storage, $message) {
+    public function Lists_settings($storage) {
         $this->storage = $storage;
-        $this->message = $message;
     }
 
     public function read($force = false) {
@@ -36,55 +32,30 @@ class Lists_settings {
             // TODO: add the number of entries of each list in settings
             if(is_readable(LISTS_DATA_SETTINGS)) {
                 $settings = getXML(LISTS_DATA_SETTINGS);
-                // debug('read() settings', $settings);
-                if (property_exists($settings, 'list')) {
-                    if ($settings->list->item->count() > 1) {
-                        // debug('item[]', $settings->list->item);
-                        foreach ($settings->list->item as $item) {
-                            // debug('item::', $item);
+                // GS_Debug('read() settings', $settings);
+                if (property_exists($settings, 'lists') && property_exists($settings->lists, 'item')) {
+                    if ($settings->lists->item->count() >= 1) {
+                        // GS_Debug('list[]', $settings->lists->list);
+                        foreach ($settings->lists->item as $item) {
+                            // GS_Debug('item::', $item);
                             if (property_exists($item, 'id') && property_exists($item, 'title')) {
                                 $this->settings['list'][(string) $item->id] = (string) $item->title;
                             }
                         }
                     } else {
-                        $item = $settings->list->item->children();
-                        if (property_exists($item, 'id') && property_exists($item, 'title')) {
-                            // debug('item', $item);
-                            $this->settings['list'][(string) $item->id] = (string) $item->title;
+                        $list = $settings->lists->list->children();
+                        if (property_exists($list, 'id') && property_exists($list, 'title')) {
+                            // GS_Debug('list', $list);
+                            $this->settings['list'][(string) $list->id] = (string) $list->title;
                         }
                     }
                 }
             } else {
-                // debug('message', $this->message);
                 // echo("<pre>".print_r(debug_backtrace(), 1)."</pre>");
-                $this->message->add_warning(i18n_r('Lists/SETTINGS_ERROR_NOSETTINGS'));
+                GS_Message::get_instance()->add_warning(i18n_r('Lists/SETTINGS_ERROR_NOSETTINGS'));
             }
-            // debug('read() this->settings', $this->settings);
+            // GS_Debug('read() this->settings', $this->settings);
         }
-
-        /*
-        $this->settings = array (
-            'list' => array (
-                'a' => array (
-                    'id' => 'a',
-                    'title' => 'Liste A',
-                    'show' => array (
-                        'page' => 'index',
-                        'rule' => 'prepend', // prepend, append, replace
-                    ),
-                ),
-                'b' => array (
-                    'id' => 'b',
-                    'title' => 'Liste B',
-                    'show' => array (
-                        'page' => 'index',
-                        'rule' => 'append', // prepend, append, replace
-                    ),
-                ),
-            ),
-        );
-        */
-
     }
 
     function undo() {
@@ -93,42 +64,43 @@ class Lists_settings {
 
     public function write() {
         $result = false;
-        // debug('LISTS_DATA_SETTINGS', LISTS_DATA_SETTINGS);
+        // GS_Debug('LISTS_DATA_SETTINGS', LISTS_DATA_SETTINGS);
         if (is_writable(dirname(LISTS_DATA_SETTINGS))) {
-            // debug('settings', $this->settings);
+            GS_Debug('settings', $this->settings);
             // self::$settings = getXML(LISTS_DATA_SETTINGS);
             $data = new SimpleXMLExtended('<?xml version="1.0" encoding="UTF-8"?><List_settings></List_settings>');
-            $list = $data->addChild('list');
+            $list = $data->addChild('lists');
             foreach ($this->settings['list'] as $key => $value) {
                 $item = $list->addChild('item');
                 $item->addChild('id')->addCData(htmlspecialchars($key));
                 $item->addChild('title')->addCData(htmlspecialchars($value));
             }
-            // debug('data', $data);
-            // $result = true;
-            $result =  XMLsave($data, LISTS_DATA_SETTINGS);
-            // debug('result', $result);
+            GS_Debug('data', $data);
+            // $result =  XMLsave($data, LISTS_DATA_SETTINGS);
+            $result = $this->storage->write($data, LISTS_DATA_SETTINGS);
+            // GS_Debug('result', $result);
         } else {
-            $this->message->add_error(i18n_r('Lists/SETTINGS_ERROR_NOWRITESETTINGS'));
+            GS_Message::get_instance()->add_error(i18n_r('Lists/SETTINGS_ERROR_NOWRITESETTINGS'));
         }
+        GS_Debug('result', $result);
         return $result;
     }
 
     /**
-     * @param Lists_item $item
+     * @param Lists_list $list
      */
-    public function set_list($item) {
-        $this->settings['list'][$item->get_id()] = $item->get_title();
+    public function set_list($list) {
+        $this->settings['list'][$list->get_id()] = $list->get_title();
     }
 
     /**
-     * @param Lists_item $item
+     * @param Lists_list $list
      */
-    public function delete_list($item) {
-        if (array_key_exists($item->get_id(), $this->settings['list'])) {
-            unset($this->settings['list'][$item->get_id()]);
+    public function delete_list($list) {
+        if (array_key_exists($list->get_id(), $this->settings['list'])) {
+            unset($this->settings['list'][$list->get_id()]);
         }
-        // debug('list', $this->settings['list']);
+        // GS_Debug('list', $this->settings['list']);
     }
 
     public function has_list($id) {

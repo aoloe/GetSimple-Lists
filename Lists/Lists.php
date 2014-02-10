@@ -1,11 +1,11 @@
 <?php
 /**
- * There is some old (unused in this class). In the future it could become a class with common
- * code to the different parts... but, more likely, it will disappear
- *
  * The Lists class is just a glue class, setting up the environment, getting the calls
  * from the main plugin's file and dispatching them to objects doing the real work.
  * It's also doing controller and routing tasks.
+ *
+ * There is some old (unused in this class). In the future it could become a class with common
+ * code to the different parts... but, more likely, it will disappear
  */
 class Lists {
     static protected $plugin_id = '';
@@ -13,28 +13,19 @@ class Lists {
     public static function get_plugin_id() {return self::$plugin_id;}
     static protected $plugin_info = array();
     public static function set_plugin_info(& $plugin_info) {self::$plugin_info = & $plugin_info;}
+    static protected $page_id = '';
+    public static function set_page_id($id) {self::$page_id = $id;}
+    public static function get_page_id() {return self::$page_id;}
     static protected $cache = null;
     public static function get_cache() {return self::$cache;}
-    static protected $storage = null;
     static protected $settings = null;
-    static public function get_list() {
-        $result = array();
-        foreach (self::$settings->get_list() as $key => $value) {
-            $result[$key] = $value;
-        }
-        return $result;
-    }
 
     // TODO: is it really needed?
     public static function initialize() {
-        if (!class_exists('Lists_message'))
-            include(LISTS_PLUGIN_PATH.'/Lists_message.php');
-        include(LISTS_PLUGIN_PATH.'/Lists_storage.php');
-        self::$storage = new Lists_storage();
         include(LISTS_PLUGIN_PATH.'/Lists_settings.php');
         if (!class_exists('Entity'))
             include(LISTS_PLUGIN_PATH.'/Entity.php');
-        include(LISTS_PLUGIN_PATH.'/Lists_item_entity.php');
+        include(LISTS_PLUGIN_PATH.'/Lists_list_entity.php');
         self::$settings = Lists_settings::get_instance();
         self::$settings->read();
     } // Lists::initialize()
@@ -75,7 +66,7 @@ class Lists {
     /**
      * create a cache with the information needed by the Lists plugin to route itself
      */
-    public static function write_cache($list_item_name = null) {
+    public static function write_cache($list_name = null) {
         // debug('LISTS_CACHE_FILE', LISTS_CACHE_FILE);
         // debug('LISTS_CACHE_PATH', LISTS_CACHE_PATH);
         self::$cache = array(
@@ -92,29 +83,29 @@ class Lists {
         include_once(LISTS_PLUGIN_PATH.'/Lists_settings.php');
         $settings = Lists_settings::get_instance();
         $settings->read();
-        include_once(LISTS_PLUGIN_PATH.'/Lists_item.php');
-        $list_item = Lists_item::factory();
+        include_once(LISTS_PLUGIN_PATH.'/Lists_list.php');
+        $list_list = Lists_list::factory();
         // debug('settings', $settings);
-        $list_item_name = (
-            is_null($list_item_name) ?
+        $list_name = (
+            is_null($list_name) ?
             array_keys($settings->get_list()) :
             (
-                is_string($list_item_name) ?
-                array($list_item_name) :
-                $list_item_name
+                is_string($list_name) ?
+                array($list_name) :
+                $list_name
             )
         );
-        foreach ($list_item_name as $item) {
-            $list_item->read($item);
-            $entity = $list_item->get();
+        foreach ($list_name as $item) {
+            $list_list->read($item);
+            $entity = $list_list->get();
             // debug('entity', $entity);
-            $data_item = $data_list->addChild('item');
-            $data_item->addChild('list_id')->addCData(htmlspecialchars($item));
-            $data_item->addChild('title')->addCData(htmlspecialchars($entity->get_title()));
+            $data_list = $data_list->addChild('item');
+            $data_list->addChild('list_id')->addCData(htmlspecialchars($item));
+            $data_list->addChild('title')->addCData(htmlspecialchars($entity->get_title()));
             if ($page = $entity->get_page()) {
-                $data_item = $data_page->addChild('item');
-                $data_item->addChild('page_id')->addCData(htmlspecialchars($page));
-                $data_item->addChild('list_id')->addCData(htmlspecialchars($item));
+                $data_list = $data_page->addChild('item');
+                $data_list->addChild('page_id')->addCData(htmlspecialchars($page));
+                $data_list->addChild('list_id')->addCData(htmlspecialchars($item));
             } else {
                 $data_global->addChild('list_id')->addCData(htmlspecialchars($item));
             }
@@ -124,16 +115,12 @@ class Lists {
         if (is_writable(LISTS_CACHE_FILE) || is_writable(LISTS_CACHE_PATH)) {
             if (!XMLsave($data, LISTS_CACHE_FILE)) {
                 trigger_error("Cannot write ".LISTS_CACHE_FILE);
-                if (class_exists('Lists_message')) {
-                    Lists_message::get_instance()->add_error(sprintf(i18n_r('Lists/ERROR_CACHENOWRITE')));
-                }
+                GS_Message::get_instance()->add_error(sprintf(i18n_r('Lists/ERROR_CACHENOWRITE')));
                 self::$cache = null;
             }
         } else { // if is_writable cache
-            if (class_exists('Lists_message')) {
-                trigger_error("Cannot write ".LISTS_CACHE_FILE);
-                Lists_message::get_instance()->add_error(sprintf(i18n_r('Lists/ERROR_CACHENOWRITE')));
-            }
+            trigger_error("Cannot write ".LISTS_CACHE_FILE);
+            GS_Message::get_instance()->add_error(sprintf(i18n_r('Lists/ERROR_CACHENOWRITE')));
             self::$cache = null;
         } // else is_writable cache
 
@@ -172,8 +159,8 @@ class Lists {
         return $result;
     }
 
-    public static function process_routing() {
-        if (array_key_exists('Lists_settings', $_REQUEST)) {
+    public static function tabs_routing() {
+        if (array_key_exists('Lists_settings', $_REQUEST) || array_key_exists('Lists_administration', $_REQUEST)) {
             self::$plugin_info['page_type'] = 'settings';
         }
     }

@@ -1,5 +1,7 @@
 <?php
 $i18n = array(
+    'YES' => "Yes",
+    'NO' => "No",
     'TITLE_LISTS_SETTINGS' => "Lists",
     'ERROR_CACHENOWRITE' => "Could not write the cache file.",
     'ERROR_EMPTY_FIELD' => "The %s must not be empty.",
@@ -23,9 +25,11 @@ $i18n = array(
     'SETTINGS_ERROR_NOSETTINGS' => "No settings could be found for the lists",
     'SETTINGS_ERROR_NOWRITESETTINGS' => "Cannot write the Lists settings",
     'SETTINGS_ERROR_NOREADLIST' => "Cannot correctly read the %s list",
-    'SETTINGS_SAVED' => "The list has been saved",
+    'ADMINISTRATION_SAVED' => "The list has been saved",
     'SETTINGS_DELETED' => "The list has been deleted",
     'ITEM_WARNING_INVALIDID' => "Ignoring an invalid Id",
     'SETTINGS_LISTHEADTITLE' => "Lists",
     'SETTINGS_LISTHEADENTRIES' => "Number of entries",
+    'EDIT_LISTITEMS_TITLE' => "%s list",
+    'EDIT_LISTITEMS_COUNT' => "%d items in %s.",
 );

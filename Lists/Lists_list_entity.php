@@ -1,6 +1,6 @@
 <?php
 
-class Lists_item_entity extends GS_Entity {
+class Lists_list_entity extends GS_Entity {
     protected $id = '';
     protected $title = '';
     protected $page = '';
@@ -13,7 +13,7 @@ class Lists_item_entity extends GS_Entity {
     protected $field = array();
     protected $entry = array();
     static public function factory() {
-        return new Lists_item_entity();
+        return new Lists_list_entity();
     }
 
     /*
