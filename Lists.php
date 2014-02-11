@@ -21,7 +21,7 @@ $current_script_id = basename($_SERVER['SCRIPT_NAME'], ".php"); // TODO: define 
 if (method_exists('GS', 'load_plugin')) {
     GS::load_plugin('PHPFived');
 } elseif (!defined('PHPFIVED') && array_key_exists('PHPFived.php', $live_plugins) && $live_plugins['PHPFived.php'])  {
-    include_once('plugins/PHPFived.php');
+    include_once(GSPLUGINPATH.'PHPFived.php');
     PHPFived::initialize();
 }
 GS::load_plugin('ContentFields', '0.1');
