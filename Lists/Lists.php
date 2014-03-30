@@ -111,7 +111,10 @@ class Lists {
             }
         }
         // debug('data', $data);
-        // debug('LISTS_CACHE_FILE', LISTS_CACHE_FILE);
+        GS_Debug('LISTS_CACHE_FILE', LISTS_CACHE_FILE);
+        GS_Debug('is_writable(LISTS_CACHE_FILE)', is_writable(LISTS_CACHE_FILE));
+        GS_Debug('LISTS_CACHE_PATH', LISTS_CACHE_PATH);
+        GS_Debug('is_writable(LISTS_CACHE_PATH)', is_writable(LISTS_CACHE_PATH));
         if (is_writable(LISTS_CACHE_FILE) || is_writable(LISTS_CACHE_PATH)) {
             if (!XMLsave($data, LISTS_CACHE_FILE)) {
                 trigger_error("Cannot write ".LISTS_CACHE_FILE);

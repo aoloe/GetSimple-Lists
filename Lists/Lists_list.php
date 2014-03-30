@@ -107,6 +107,7 @@ class Lists_list {
         $result = false;
         // debug('LISTS_DATA_SETTINGS', LISTS_DATA_LIST_PATH);
         $filename = $this->get_filename($this->list->get_id());
+        debug('has_valid_id', $this->has_valid_id());
         if (
             $this->has_valid_id() &&
             is_writable(
